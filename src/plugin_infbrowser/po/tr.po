@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: bluefish 2.2.4\n"
+"Report-Msgid-Bugs-To: olivier@bluefish.openoffice.nl\n"
+"POT-Creation-Date: 2025-03-30 20:21+0200\n"
+"PO-Revision-Date: 2023-05-17 13:57+0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.3.1\n"
+
+#: src/plugin_infbrowser/infb_gui.c:139
+msgid "Loading..."
+msgstr "Yükleniyor..."
+
+#: src/plugin_infbrowser/infb_gui.c:145 src/plugin_infbrowser/infb_gui.c:205
+msgid "Cannot load file from network"
+msgstr "Ağdan dosya yüklenemiyor"
+
+#: src/plugin_infbrowser/infb_gui.c:159
+msgid "Cannot find file"
+msgstr "Dosya bulunamadı"
+
+#: src/plugin_infbrowser/infb_gui.c:369
+msgid "Fragment saved"
+msgstr "Parça kaydedildi"
+
+#: src/plugin_infbrowser/infb_gui.c:373
+msgid "Cannot open file"
+msgstr "Dosya açılamıyor"
+
+#: src/plugin_infbrowser/infb_gui.c:457 src/plugin_infbrowser/infb_gui.c:495
+msgid "Nothing found"
+msgstr "Hiçbir şey bulunamadı"
+
+#: src/plugin_infbrowser/infb_gui.c:561
+msgid "Documentation index"
+msgstr "Belgeleme dizini"
+
+#: src/plugin_infbrowser/infb_gui.c:566
+msgid "Document index"
+msgstr "Belge dizini"
+
+#: src/plugin_infbrowser/infb_gui.c:571
+msgid "Upper level"
+msgstr "Üst seviye"
+
+#: src/plugin_infbrowser/infb_gui.c:577
+msgid "Save current view"
+msgstr "Mevcut görünümü kaydet"
+
+#: src/plugin_infbrowser/infb_gui.c:578
+msgid "Go to selected fragment"
+msgstr "Seçilen parçaya git"
+
+#: src/plugin_infbrowser/infb_gui.c:600
+msgid "Find"
+msgstr "Bul"
+
+#: src/plugin_infbrowser/infb_gui.c:606
+msgid "Info Browser"
+msgstr "Bilgi Tarayıcı"
+
+#: src/plugin_infbrowser/infb_load.c:41
+#, c-format
+msgid "Cannot load reference file %s\n"
+msgstr "%s referans dosyası yüklenemiyor\n"
+
+#: src/plugin_infbrowser/infb_load.c:168
+msgid "Documentation entries"
+msgstr "Belgeleme girişleri"
+
+#: src/plugin_infbrowser/infb_load.c:172
+msgid "References"
+msgstr "Referanslar"
+
+#: src/plugin_infbrowser/infb_load.c:174
+msgid "DTD"
+msgstr "DTD"
+
+#: src/plugin_infbrowser/infb_load.c:176
+msgid "Web pages"
+msgstr "Web sayfaları"
+
+#: src/plugin_infbrowser/infb_text.c:808
+msgid "Unknown document type"
+msgstr "Bilinmeyen belge türü"
+
+#: src/plugin_infbrowser/infb_wizard.c:116
+#: src/plugin_infbrowser/infb_wizard.c:164
+msgid "Local DTD file"
+msgstr "Yerel DTD dosyası"
+
+#: src/plugin_infbrowser/infb_wizard.c:124
+msgid "Remote DTD file"
+msgstr "Uzak DTD dosyası"
+
+#: src/plugin_infbrowser/infb_wizard.c:161
+msgid "Choose file"
+msgstr "Dosya seçin"
+
+#: src/plugin_infbrowser/infb_wizard.c:213
+msgid "Entry name"
+msgstr "Giriş adı"
+
+#: src/plugin_infbrowser/infb_wizard.c:222
+msgid "Description"
+msgstr "Açıklama"
+
+#: src/plugin_infbrowser/infb_wizard.c:258
+msgid "DTD file URI"
+msgstr "DTD dosya URI'si"
+
+#: src/plugin_infbrowser/infb_wizard.c:348
+msgid "New info item"
+msgstr "Yeni bilgi öğesi"
+
+#: src/plugin_infbrowser/infb_wizard.c:418
+msgid "Entries you can delete"
+msgstr "Silebileceğiniz girişler"
