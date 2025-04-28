@@ -68,8 +68,8 @@ m4_if(m4_version_compare(PKG_MACROS_VERSION, [$1]), -1,
     [m4_fatal([pkg.m4 version $1 or higher is required but ]PKG_MACROS_VERSION[ found])])
 ])dnl PKG_PREREQ
 
-dnl PKG_PROG_PKG_CONFIG([MIN-VERSION])
-dnl ----------------------------------
+dnl PKG_PROG_PKG_CONFIG([MIN-VERSION], [ACTION-IF-NOT-FOUND])
+dnl ---------------------------------------------------------
 dnl Since: 0.16
 dnl
 dnl Search for the pkg-config tool and set the PKG_CONFIG variable to
@@ -77,6 +77,12 @@ dnl first found in the path. Checks that the version of pkg-config found
 dnl is at least MIN-VERSION. If MIN-VERSION is not specified, 0.9.0 is
 dnl used since that's the first version where most current features of
 dnl pkg-config existed.
+dnl
+dnl If pkg-config is not found or older than specified, it will result
+dnl in an empty PKG_CONFIG variable. To avoid widespread issues with
+dnl scripts not checking it, ACTION-IF-NOT-FOUND defaults to aborting.
+dnl You can specify [PKG_CONFIG=false] as an action instead, which would
+dnl result in pkg-config tests failing, but no bogus error messages.
 AC_DEFUN([PKG_PROG_PKG_CONFIG],
 [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
 m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
@@ -97,6 +103,9 @@ if test -n "$PKG_CONFIG"; then
 		AC_MSG_RESULT([no])
 		PKG_CONFIG=""
 	fi
+fi
+if test -z "$PKG_CONFIG"; then
+	m4_default([$2], [AC_MSG_ERROR([pkg-config not found])])
 fi[]dnl
 ])dnl PKG_PROG_PKG_CONFIG
 
@@ -1285,7 +1294,6 @@ AC_DEFUN([AM_PATH_PYTHON],
   dnl supported. (2.0 was released on October 16, 2000).
   m4_define_default([_AM_PYTHON_INTERPRETER_LIST],
 [python python2 python3 dnl
- python3.11 python3.10 dnl
  python3.9 python3.8 python3.7 python3.6 python3.5 python3.4 python3.3 dnl
  python3.2 python3.1 python3.0 dnl
  python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 dnl
@@ -1502,14 +1510,7 @@ except ImportError:
    am_cv_python_pythondir=`$PYTHON -c "
 $am_python_setup_sysconfig
 if can_use_sysconfig:
-  if hasattr(sysconfig, 'get_default_scheme'):
-    scheme = sysconfig.get_default_scheme()
-  else:
-    scheme = sysconfig._get_default_scheme()
-  if scheme == 'posix_local':
-    # Debian's default scheme installs to /usr/local/ but we want to find headers in /usr/
-    scheme = 'posix_prefix'
-  sitedir = sysconfig.get_path('purelib', scheme, vars={'base':'$am_py_prefix'})
+  sitedir = sysconfig.get_path('purelib', vars={'base':'$am_py_prefix'})
 else:
   from distutils import sysconfig
   sitedir = sysconfig.get_python_lib(0, 0, prefix='$am_py_prefix')
@@ -1551,14 +1552,7 @@ sys.stdout.write(sitedir)"`
    am_cv_python_pyexecdir=`$PYTHON -c "
 $am_python_setup_sysconfig
 if can_use_sysconfig:
-  if hasattr(sysconfig, 'get_default_scheme'):
-    scheme = sysconfig.get_default_scheme()
-  else:
-    scheme = sysconfig._get_default_scheme()
-  if scheme == 'posix_local':
-    # Debian's default scheme installs to /usr/local/ but we want to find headers in /usr/
-    scheme = 'posix_prefix'
-  sitedir = sysconfig.get_path('platlib', scheme, vars={'platbase':'$am_py_exec_prefix'})
+  sitedir = sysconfig.get_path('platlib', vars={'platbase':'$am_py_exec_prefix'})
 else:
   from distutils import sysconfig
   sitedir = sysconfig.get_python_lib(1, 0, prefix='$am_py_exec_prefix')
