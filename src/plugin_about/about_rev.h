@@ -5,5 +5,4 @@
 #ifdef SVN_REVISION
 #undef SVN_REVISION
 #endif /* SVN_REVISION */
-#define SVN_REVISION "9133M"
 #endif /* __ABOUT_REV_H_ */

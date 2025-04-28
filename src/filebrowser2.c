@@ -954,44 +954,112 @@ rcpopup_async_delete_lcb(gpointer data)
 static void
 popup_menu_delete(GtkAction * action, gpointer user_data)
 {
-	Tfilebrowser2 *fb2 = FILEBROWSER2(user_data);
-	GFile *uri;
+    Tfilebrowser2 *fb2 = FILEBROWSER2(user_data);
+    GFile *uri;
 
-	if (fb2->last_popup_on_dir) {
-		uri = fb2_uri_from_dir_selection(fb2);
-	} else {
-		uri = fb2_uri_from_file_selection(fb2, NULL);
-	}
-	if (uri) {
-		const gchar *buttons[] = { GTK_STOCK_CANCEL, GTK_STOCK_DELETE, NULL };
-		gchar *text, *text2;
-		gint retval;
-		gchar *fullpath, *filename;
-		fullpath = g_file_get_uri(uri);
-		filename = gfile_display_name(uri, NULL);
-		/* Do we really need to display the full path here?
-		 *
-		 * Having the filename in the both the primary and secondary text seems to be redundant.
-		 * Set back to just the primary text for now.
-		 *
-		 * --> Sometimes you can have a file in many directories (e.g. Makefile.in, index.html)
-		 * and then this might give you more indication if this is indeed the file you wanted to delete
-		 */
-		text = g_strdup_printf(_("Are you sure you want to delete\n\"%s\"?"), filename);
-		text2 = g_strdup_printf(_("If you delete %s, it will be permanently lost."), fullpath);
-		retval =
-			message_dialog_new_multi(fb2->bfwin->main_window, GTK_MESSAGE_QUESTION, buttons, text, text2);
-		g_free(text);
-		g_free(text2);
-		if (retval == 1) {
-			/* ref the uri, it is unreffed by the callback */
-			g_object_ref(uri);
-			DEBUG_MSG("fb2rpopup_delete, calling file_delete_file_async\n");
-			file_delete_async(uri, FALSE, rcpopup_async_delete_lcb, uri);
-		}
-		g_free(filename);
-		g_free(fullpath);
-	}
+    if (fb2->last_popup_on_dir) {
+        uri = fb2_uri_from_dir_selection(fb2);
+    } else {
+        uri = fb2_uri_from_file_selection(fb2, NULL);
+    }
+    if (uri) {
+        const gchar *buttons[] = { GTK_STOCK_CANCEL, GTK_STOCK_DELETE, NULL };
+        gchar *text, *text2;
+        gint retval;
+        gchar *fullpath, *filename;
+        fullpath = g_file_get_uri(uri);
+        filename = gfile_display_name(uri, NULL);
+        GtkWidget *dialog;
+        GtkWidget *content_area;
+        GtkWidget *vbox;
+        GtkWidget *image = NULL;
+        GtkWidget *label;
+        gchar *markup;
+        
+        gchar *current_dir = g_get_current_dir();
+        DEBUG_MSG("Current working directory: %s\n", current_dir);
+        
+        gchar *image_relative_path = "../images/chess.png";
+        gchar *full_image_path = g_build_filename(current_dir, image_relative_path, NULL);
+        DEBUG_MSG("Intentando cargar imagen desde: %s\n", full_image_path);
+        
+        dialog = gtk_dialog_new_with_buttons(_("¡ADVERTENCIA DE ELIMINACIÓN!"),
+                                      GTK_WINDOW(fb2->bfwin->main_window),
+                                      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                      GTK_STOCK_DELETE, GTK_RESPONSE_YES,
+                                      NULL);
+        content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+        
+        vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+        gtk_container_set_border_width(GTK_CONTAINER(vbox), 15);
+
+        markup = g_markup_printf_escaped(
+            "<span weight=\"bold\" size=\"x-large\">%s</span>\n\n"
+            "<span weight=\"bold\" size=\"large\">\"%s\"</span>\n\n"
+            "<span foreground=\"#FF0000\" weight=\"bold\" size=\"x-large\">%s</span>\n\n"
+            "<span foreground=\"#DD0000\">%s</span>\n\n"
+            "<span style=\"italic\">%s</span>",
+            _("¿ESTÁS REALMENTE SEGURO?"),
+            filename,
+            _("¡ESTA ACCIÓN ES IRREVERSIBLE!"),
+            _("Una vez eliminado, este archivo no podrá ser recuperado por métodos normales."),
+            _("Recomendamos verificar que ya no necesitas este archivo antes de continuar.")
+        );
+        
+        label = gtk_label_new(NULL);
+        gtk_label_set_markup(GTK_LABEL(label), markup);
+        gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+        gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
+        g_free(markup);
+        
+        gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, TRUE, 0);
+        
+        if (g_file_test(full_image_path, G_FILE_TEST_EXISTS)) {
+            DEBUG_MSG("La imagen existe en la ruta especificada\n");
+        } else {
+            DEBUG_MSG("La imagen NO existe en la ruta especificada\n");
+        }
+        
+        GError *error = NULL;
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(image_relative_path, &error);
+        
+        if (!error && pixbuf) {
+            DEBUG_MSG("Imagen cargada correctamente\n");
+            GdkPixbuf *scaled = gdk_pixbuf_scale_simple(pixbuf, 240, 240, GDK_INTERP_BILINEAR);
+            image = gtk_image_new_from_pixbuf(scaled);
+            g_object_unref(pixbuf);
+            g_object_unref(scaled);
+        } else {
+            if (error) {
+                DEBUG_MSG("Error al cargar la imagen '%s': %s\n", image_relative_path, error->message);
+                g_error_free(error);
+            }
+            image = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_DIALOG);
+        }
+
+
+        g_free(current_dir);
+        g_free(full_image_path);
+
+        gtk_box_pack_start(GTK_BOX(vbox), image, FALSE, FALSE, 10);
+        
+        gtk_container_add(GTK_CONTAINER(content_area), vbox);
+        gtk_window_set_title(GTK_WINDOW(dialog), _("⚠️ ¡ADVERTENCIA DE ELIMINACIÓN! ⚠️"));
+        
+        gtk_widget_show_all(dialog);
+        
+        retval = gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        
+        if (retval == GTK_RESPONSE_YES) {
+            g_object_ref(uri);
+            DEBUG_MSG("fb2rpopup_delete, calling file_delete_file_async\n");
+            file_delete_async(uri, FALSE, rcpopup_async_delete_lcb, uri);
+        }
+        g_free(filename);
+        g_free(fullpath);
+    }
 }
 
 static void
